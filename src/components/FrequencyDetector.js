@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import Keyboard from './Keyboard';
 import AnimatedNotes from './AnimatedNotes';
 import _getUserMedia from 'getusermedia';
@@ -16,14 +15,22 @@ class FrequencyDetector extends Component {
     super(props);
     this.state = {
       frequencyData: {},
-      noteNumberToMatch: 58,
+      noteNumberToMatch: null,
       noteIsMatched: false,
     };
     this.throttledProcessAudio = _.throttle(this.processAudio, 30);
   }
+
   componentDidMount() {
     this.getUserMedia();
   }
+
+  updateNoteNumberToMatch = (noteNumberToMatch) => {
+    this.setState({
+      noteNumberToMatch,
+    });
+  };
+
   processAudio = (pitchDetect) => {
     const frequencyData = pitchDetect.getPitch();
     const { noteNumberToMatch } = this.state;
@@ -58,6 +65,7 @@ class FrequencyDetector extends Component {
     }
 
   };
+
   render() {
     const {
       frequencyData,
@@ -71,7 +79,10 @@ class FrequencyDetector extends Component {
         <div>Note: {frequencyData.note}</div>
         <div className={"container"}>
           <Keyboard noteNumber={noteNumber} />
-          <AnimatedNotes noteIsMatched={noteIsMatched} />
+          <AnimatedNotes
+            noteIsMatched={noteIsMatched}
+            updateNoteNumberToMatch={(noteNumberToMatch) => {this.updateNoteNumberToMatch(noteNumberToMatch)}}
+          />
         </div>
       </div>
     );
@@ -79,6 +90,3 @@ class FrequencyDetector extends Component {
 }
 
 export default FrequencyDetector;
-
-FrequencyDetector.propTypes = {
-};

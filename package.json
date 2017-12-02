@@ -13,7 +13,8 @@
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
     "react-pixi": "^0.9.16",
-    "react-scripts": "^1.0.17"
+    "react-scripts": "^1.0.17",
+    "yy-intersects": "^1.0.7"
   },
   "scripts": {
     "start": "react-scripts start",
