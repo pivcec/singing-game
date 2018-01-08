@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import * as Obj from './helpers/pixiClasses';
+import Lyrics from './Lyrics';
 import { Rectangle, Line } from '../helpers/pixiClasses';
-import notesToRender from '../resources/notesToRender';
+import notesToRender from '../resources/notes/notesToRender';
 const PIXI = require('pixi.js');
 
 class AnimatedNotes extends Component {
@@ -17,23 +17,29 @@ class AnimatedNotes extends Component {
       endPositionXOfNoteToDetect: null,
       startPositionXOfNotes: null,
       noteToDetectIsColliding: false,
+      countAnimatedGroupMovementMultiplesOf400: 0,
+      bar: 0,
     };
   }
 
   componentWillMount() {
-    this.getOriginalStartAndEndPositionXOfNoteToDetect();
-    this.getNumberOfNotes();
-    this.getNoteNumberToMatch();
+    this.setOriginalStartAndEndPositionXOfNoteToDetect();
+    this.setNumberOfNotes();
+    this.setNoteNumberToMatch();
   }
 
-  getNoteNumberToMatch = () => {
+  componentDidMount() {
+    this.pixiInit();
+  }
+
+  setNoteNumberToMatch = () => {
     const { keyOfNoteToDetect } = this.state;
     const noteNumberToMatch = notesToRender[keyOfNoteToDetect].noteNumber;
     const { updateNoteNumberToMatch } = this.props;
     updateNoteNumberToMatch(noteNumberToMatch);
   };
 
-  getOriginalStartAndEndPositionXOfNoteToDetect = () => {
+  setOriginalStartAndEndPositionXOfNoteToDetect = () => {
     const { keyOfNoteToDetect } = this.state;
     const originalStartPositionXOfNoteToDetect = notesToRender[keyOfNoteToDetect].positionX;
     const originalEndPositionXOfNoteToDetect = originalStartPositionXOfNoteToDetect + notesToRender[keyOfNoteToDetect].width;
@@ -43,15 +49,11 @@ class AnimatedNotes extends Component {
     });
   };
 
-  getNumberOfNotes = () => {
+  setNumberOfNotes = () => {
     this.setState({
       numberOfNotes: notesToRender.length,
     });
   };
-
-  componentDidMount() {
-    this.pixiInit();
-  }
 
   renderSprites = (texture, notes) => {
     notesToRender.forEach((note, i) => {
@@ -60,27 +62,53 @@ class AnimatedNotes extends Component {
       window['note'+i].position.x = note.positionX;
       window['note'+i].position.y = note.positionY;
       window['note'+i].interactive = true;
-      window['note'+i].hitArea = new PIXI.Rectangle(0, 0, note.width, 10);
       notes.addChild(window['note'+i]);
     });
   };
 
-  createAndStageNotes = (stage, renderer) => {
+  renderBarLines = (texture, notes) => {
+    let totalNoteLength = 0;
+    notesToRender.forEach((note, i) => {
+      totalNoteLength = totalNoteLength + note.width + 3;
+      if (totalNoteLength % 400 === 0) {
+        window['barLine'+i] = new PIXI.Sprite(texture);
+        window['barLine'+i].position.x = note.totalNoteLength;
+        window['barLine'+i] = new Line([200, 150, 0, 0], totalNoteLength, 0, totalNoteLength, 400, 0xFFFFFF);
+        notes.addChild(window['barLine'+i]);
+      }
+    });
+  }
+
+  createAnimatedGroup = (stage, renderer) => {
     // create rectangle primitive and texture
     const note = new Rectangle(1000);
     const texture = new PIXI.RenderTexture(renderer);
     renderer.render(note, texture)
-    // create group of rectangles
+    // create group of notes
     const notes = new PIXI.Container();
-    // render rectangle sprites and add them to rectangles group
+    // render note sprites and add them to notes group
     this.renderSprites(texture, notes);
-    // add rectangles group to stage
+    // render bar lines and add them to notes group
+    this.renderBarLines(texture, notes);
+    // add notes group to stage
     stage.addChild(notes);
     // return rectangles group
     return notes;
   };
 
-  setNoteToDetectBounds = (notes, amountOfMovement) => {
+  checkAnimatedGroupMovementMultiplesOf400 = () => {
+    const { startPositionXOfNotes, countAnimatedGroupMovementMultiplesOf400, bar } = this.state;
+    const nextMultipleOf400 = countAnimatedGroupMovementMultiplesOf400 + 400;
+    const startPositionXOfNotesToInteger = Math.round(-startPositionXOfNotes);
+    if (startPositionXOfNotesToInteger > nextMultipleOf400) {
+      this.setState({
+        countAnimatedGroupMovementMultiplesOf400: countAnimatedGroupMovementMultiplesOf400 + 400,
+        bar: bar + 1,
+      })
+    }
+  };
+
+  setBoundsOfNoteToDetect = (amountOfMovement) => {
     const {
       startPositionXOfNotes,
       originalStartPositionXOfNoteToDetect,
@@ -91,42 +119,47 @@ class AnimatedNotes extends Component {
       startPositionXOfNoteToDetect: originalStartPositionXOfNoteToDetect + startPositionXOfNotes,
       endPositionXOfNoteToDetect: originalEndPositionXOfNoteToDetect + startPositionXOfNotes,
     });
+    this.checkAnimatedGroupMovementMultiplesOf400(startPositionXOfNotes);
   };
 
-  checkFrequencyToMatch = (startPositionXOfNoteToDetect, endPositionXOfNoteToDetect, linePositionX, note) => {
+  checkFrequencyToMatch = (startPositionXOfNoteToDetect, endPositionXOfNoteToDetect, noteDetectionLinePositionX, note) => {
     const { noteIsMatched } = this.props;
-    if (startPositionXOfNoteToDetect <= linePositionX && endPositionXOfNoteToDetect >= linePositionX) {
-      // check if note is matched
+    if (startPositionXOfNoteToDetect <= noteDetectionLinePositionX && endPositionXOfNoteToDetect >= noteDetectionLinePositionX) {
+      // note is within time scope
       if (noteIsMatched === true) {
+        // note is matched
         note.tint = 0xFF0000;
       } else {
+        // note is not matched
         note.tint = 0xFFFF00;
       }
     } else {
+      // note is not within time scope
       note.tint = 0xFFFF00;
     }
   };
 
-  checkForCollisionOfNoteToDetect(linePositionX, notes) {
+  checkForCollisionOfNoteToDetect(noteDetectionLinePositionX, animatedGroup) {
     const { startPositionXOfNoteToDetect, endPositionXOfNoteToDetect, noteToDetectIsColliding, keyOfNoteToDetect, numberOfNotes } = this.state;
     const keyOfNoteToDetectPlusOne = keyOfNoteToDetect + 1;
-    const note = notes.children[keyOfNoteToDetect];
-    if (startPositionXOfNoteToDetect <= linePositionX && endPositionXOfNoteToDetect >= linePositionX) {
+    const note = animatedGroup.children[keyOfNoteToDetect];
+    if (startPositionXOfNoteToDetect <= noteDetectionLinePositionX && endPositionXOfNoteToDetect >= noteDetectionLinePositionX) {
       // note to detect is colliding
-      this.checkFrequencyToMatch(startPositionXOfNoteToDetect, endPositionXOfNoteToDetect, linePositionX, note);
+      this.checkFrequencyToMatch(startPositionXOfNoteToDetect, endPositionXOfNoteToDetect, noteDetectionLinePositionX, note);
       this.setState({
         noteToDetectIsColliding: true,
       });
     } else {
       // note to detect is not colliding
+      // correct current state, if necessary
       if (noteToDetectIsColliding === true) {
         this.setState({
           noteToDetectIsColliding: false,
           keyOfNoteToDetect: keyOfNoteToDetectPlusOne,
         });
         if (keyOfNoteToDetectPlusOne < numberOfNotes) {
-          this.getNoteNumberToMatch();
-          this.getOriginalStartAndEndPositionXOfNoteToDetect();
+          this.setNoteNumberToMatch();
+          this.setOriginalStartAndEndPositionXOfNoteToDetect();
         }
       }
     }
@@ -140,12 +173,12 @@ class AnimatedNotes extends Component {
       400,
       {view : this.theCanvas}
     );
-    // create line
-    const linePositionX = 10;
-    const line = new Line([200, 150, 0, 0], linePositionX, 0, linePositionX, 400);
-    stage.addChild(line);
     // create and stage notes
-    const notes = this.createAndStageNotes(stage, renderer);
+    const animatedGroup = this.createAnimatedGroup(stage, renderer);
+    // create note detection line
+    const noteDetectionLinePositionX = 10;
+    const noteDetectionLine = new Line([200, 150, 0, 0], noteDetectionLinePositionX, 0, noteDetectionLinePositionX, 400, 0xFF0000);
+    stage.addChild(noteDetectionLine);
     // create animation update variables
     let lastTime = new Date().getTime();
 
@@ -153,12 +186,11 @@ class AnimatedNotes extends Component {
       const currentTime = new Date().getTime();
       const delta = (currentTime-lastTime)/1000;
       const amountOfMovement = VELOCITY*delta;
-      // update notes start position x
-      notes.position.x -= amountOfMovement;
+      animatedGroup.position.x -= amountOfMovement;
       // set bounds of note to detect
-      this.setNoteToDetectBounds(notes, amountOfMovement);
+      this.setBoundsOfNoteToDetect(amountOfMovement);
       // check if note to detect is within position / time scope
-      this.checkForCollisionOfNoteToDetect(linePositionX, notes);
+      this.checkForCollisionOfNoteToDetect(noteDetectionLinePositionX, animatedGroup);
       // update animation
       renderer.render(stage);
       requestAnimationFrame(update);
@@ -169,9 +201,11 @@ class AnimatedNotes extends Component {
   };
 
   render() {
+    const { keyOfNoteToDetect, bar } = this.state;
     return (
       <div className={"animated-notes"}>
         <canvas ref={ theCanvas => this.theCanvas = theCanvas} />
+        <Lyrics currentNote={keyOfNoteToDetect} currentBar={bar} />
       </div>
     );
   }

@@ -8,8 +8,8 @@ export function Rectangle(width) {
   return rectangle;
 }
 
-export function Line(line, moveToX, moveToY, lineToX, lineToY) {
-  line = new PIXI.Graphics().lineStyle(1, 0xFF0000);
+export function Line(line, moveToX, moveToY, lineToX, lineToY, colour) {
+  line = new PIXI.Graphics().lineStyle(1, colour);
   line.moveTo(moveToX, moveToY);
   line.lineTo(lineToX, lineToY);
   return line;

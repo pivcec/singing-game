@@ -5,7 +5,9 @@ import FrequencyDetector from './components/FrequencyDetector';
 class App extends Component {
   render() {
     return (
-      <FrequencyDetector/>
+      <div>
+        <FrequencyDetector/>
+      </div>
     );
   }
 }

@@ -1,6 +1,25 @@
 .container {
   width: 630px;
+  height: 400px;
   margin: auto;
+}
+
+.lyrics {
+  font-size: 60px;
+}
+
+.line {
+  margin: 0 auto;
+  display: table;
+}
+
+.lyric {
+  display: inline;
+  margin-right: 10px;
+}
+
+.syllable.active {
+  color: red;
 }
 
 .keyboard {
@@ -14,14 +33,14 @@
   padding: 0 !important;
 }
 
-.white {
+.note.white {
   height: 10px;
   width: 30px;
   box-sizing: border-box;
   border: 1px solid #000000;
 }
 
-.black {
+.note.black {
   height: 10px;
   width: 30px;
   box-sizing: border-box;
@@ -29,7 +48,7 @@
   background-color: #000000;
 }
 
-.active {
+.note.active {
   height: 10px;
   width: 30px;
   background-color: #ff0000;

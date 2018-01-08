@@ -1,0 +1,228 @@
+/*
+Mary had a little lamb,
+little lamb, little lamb.
+Mary had a little lamb,
+it`s fleece was white as snow.
+And everywhere that Mary went,
+Mary went, Mary went,
+and everywhere that Mary went
+- the lamb was sure to go.
+
+It followed her to school one day
+school one day, school one day.
+It followed her to school one day,
+which was against the rules.
+It made the children laugh and play,
+laugh and play, laugh and play,
+it made the children laugh and play
+- to see a lamb in school.
+*/
+
+const lyricsToRender = [
+  {
+    bar:1,
+    syllables:[
+      {
+        syllable:'Ma',
+        associatedNote:0,
+      },
+      {
+        syllable:'ry',
+        associatedNote:1,
+      },
+    ]
+  },
+  {
+    bar:1,
+    syllables:[
+      {
+        syllable:'had',
+        associatedNote:2,
+      },
+    ]
+  },
+  {
+    bar:1,
+    syllables:[
+      {
+        syllable:'a',
+        associatedNote:3,
+      },
+    ]
+  },
+  {
+    bar:2,
+    syllables:[
+      {
+        syllable:'li',
+        associatedNote:4,
+      },
+      {
+        syllable:'ttle',
+        associatedNote:5,
+      },
+    ]
+  },
+  {
+    bar:2,
+    syllables:[
+      {
+        syllable:'lamb,',
+        associatedNote:6,
+      },
+    ]
+  },
+  {
+    bar:3,
+    syllables:[
+      {
+        syllable:'li',
+        associatedNote:7,
+      },
+      {
+        syllable:'ttle',
+        associatedNote:8,
+      },
+    ]
+  },
+  {
+    bar:3,
+    syllables:[
+      {
+        syllable:'lamb,',
+        associatedNote:9,
+      },
+    ]
+  },
+  {
+    bar:4,
+    syllables:[
+      {
+        syllable:'li',
+        associatedNote:10,
+      },
+      {
+        syllable:'ttle',
+        associatedNote:11,
+      },
+    ]
+  },
+  {
+    bar:4,
+    syllables:[
+      {
+        syllable:'lamb.',
+        associatedNote:12,
+      },
+    ]
+  },
+  {
+    bar:5,
+    syllables:[
+      {
+        syllable:'Ma',
+        associatedNote:13,
+      },
+      {
+        syllable:'ry',
+        associatedNote:14,
+      },
+    ]
+  },
+  {
+    bar:5,
+    syllables:[
+      {
+        syllable:'had',
+        associatedNote:15,
+      },
+    ]
+  },
+  {
+    bar:5,
+    syllables:[
+      {
+        syllable:'a',
+        associatedNote:16,
+      },
+    ]
+  },
+  {
+    bar:6,
+    syllables:[
+      {
+        syllable:'li',
+        associatedNote:17,
+      },
+      {
+        syllable:'ttle',
+        associatedNote:18,
+      },
+    ]
+  },
+  {
+    bar:6,
+    syllables:[
+      {
+        syllable:'lamb,',
+        associatedNote:19,
+      },
+    ]
+  },
+  {
+    bar:6,
+    syllables:[
+      {
+        syllable:'Its',
+        associatedNote:20,
+      },
+    ]
+  },
+  {
+    bar:7,
+    syllables:[
+      {
+        syllable:'fleece',
+        associatedNote:21,
+      },
+    ]
+  },
+  {
+    bar:7,
+    syllables:[
+      {
+        syllable:'was',
+        associatedNote:22,
+      },
+    ]
+  },
+  {
+    bar:7,
+    syllables:[
+      {
+        syllable:'white',
+        associatedNote:23,
+      },
+    ]
+  },
+  {
+    bar:7,
+    syllables:[
+      {
+        syllable:'as',
+        associatedNote:24,
+      },
+    ]
+  },
+  {
+    bar:8,
+    syllables:[
+      {
+        syllable:'snow',
+        associatedNote:25,
+      },
+    ]
+  },
+];
+
+export default lyricsToRender;

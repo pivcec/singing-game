@@ -34,7 +34,6 @@ class FrequencyDetector extends Component {
   processAudio = (pitchDetect) => {
     const frequencyData = pitchDetect.getPitch();
     const { noteNumberToMatch } = this.state;
-    // console.log(frequencyData);
     if (frequencyData.noteNumber === noteNumberToMatch) {
       this.setState({
         noteIsMatched: true,
@@ -49,21 +48,15 @@ class FrequencyDetector extends Component {
     });
     this.throttledProcessAudio(pitchDetect);
   };
+
   async getUserMedia() {
     try {
       const stream = await getUserMedia();
       const pitchDetect = new PitchDetect(stream);
-      /*
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const frameCount = audioCtx.sampleRate * 2.0;
-      const myArrayBuffer = audioCtx.createBuffer(1, frameCount, audioCtx.sampleRate);
-      console.log(myArrayBuffer);
-      */
       this.processAudio(pitchDetect);
     } catch (e) {
       console.error('Failed', e);
     }
-
   };
 
   render() {
@@ -81,12 +74,14 @@ class FrequencyDetector extends Component {
           <Keyboard noteNumber={noteNumber} />
           <AnimatedNotes
             noteIsMatched={noteIsMatched}
+            updateLyricsClock={(amountOfMovement) => {this.props.updateLyricsClock(amountOfMovement)}}
             updateNoteNumberToMatch={(noteNumberToMatch) => {this.updateNoteNumberToMatch(noteNumberToMatch)}}
           />
         </div>
       </div>
     );
   }
+
 }
 
 export default FrequencyDetector;
