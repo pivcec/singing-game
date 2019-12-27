@@ -1,0 +1,30 @@
+const notesToRender = [
+  { noteNumber: 60, length: 1, position: 0, lyric: "Ma-" },
+  { noteNumber: 58, length: 1, position: 1, lyric: "-rry" },
+  { noteNumber: 56, length: 1, position: 2, lyric: "had" },
+  { noteNumber: 58, length: 1, position: 3, lyric: "a" },
+  { noteNumber: 60, length: 1, position: 4, lyric: "li-" },
+  { noteNumber: 60, length: 1, position: 5, lyric: "-ttle" },
+  { noteNumber: 60, length: 2, position: 6, lyric: "lamb" },
+  { noteNumber: 58, length: 1, position: 8, lyric: "li-" },
+  { noteNumber: 58, length: 1, position: 9, lyric: "-ttle" },
+  { noteNumber: 58, length: 2, position: 10, lyric: "lamb" },
+  { noteNumber: 60, length: 1, position: 12, lyric: "li-" },
+  { noteNumber: 63, length: 1, position: 13, lyric: "-ttle" },
+  { noteNumber: 63, length: 2, position: 14, lyric: "lamb" },
+  { noteNumber: 60, length: 1, position: 16, lyric: "Ma-" },
+  { noteNumber: 58, length: 1, position: 17, lyric: "-rry" },
+  { noteNumber: 56, length: 1, position: 18, lyric: "had" },
+  { noteNumber: 58, length: 1, position: 19, lyric: "a" },
+  { noteNumber: 60, length: 1, position: 20, lyric: "li-" },
+  { noteNumber: 60, length: 1, position: 21, lyric: "-ttle" },
+  { noteNumber: 60, length: 1, position: 22, lyric: "lamb" },
+  { noteNumber: 60, length: 1, position: 23, lyric: "its" },
+  { noteNumber: 58, length: 1, position: 24, lyric: "fleece" },
+  { noteNumber: 58, length: 1, position: 25, lyric: "was" },
+  { noteNumber: 60, length: 1, position: 26, lyric: "white" },
+  { noteNumber: 58, length: 1, position: 27, lyric: "as" },
+  { noteNumber: 56, length: 4, position: 28, lyric: "snow" }
+];
+
+export default notesToRender;

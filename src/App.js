@@ -1,14 +1,10 @@
-import React, { Component } from 'react';
-import './App.css';
-import FrequencyDetector from './components/FrequencyDetector';
+import React, { Component } from "react";
+import "./App.css";
+import Main from "./components/Main";
 
 class App extends Component {
   render() {
-    return (
-      <div>
-        <FrequencyDetector/>
-      </div>
-    );
+    return <Main />;
   }
 }
 
