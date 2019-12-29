@@ -3,9 +3,8 @@ import _ from "lodash";
 import _getUserMedia from "getusermedia";
 import PitchDetect from "pitch-detect";
 import Controls from "./Controls";
-import ScrollingNotes from "./ScrollingNotes";
 import Keyboard from "./Keyboard";
-import { Stage } from "@inlet/react-pixi";
+import Animation from "./Animation";
 import styled from "styled-components";
 import config from "../config";
 import notesToRender from "../resources/notesToRender";
@@ -26,58 +25,37 @@ const KeyboardAndAnimation = styled.div`
   flex-direction: row;
 `;
 
+const AnimationContainer = styled.div`
+  width: 800px;
+  height: ${props => props.height}px;
+  background-color: black;
+  overflow: hidden;
+  position: relative;
+`;
+
 class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isPlaying: false,
-      currentNoteToDetect: {},
-      currentlyDetectedNoteNumber: null,
-      notesThatHaveBeenDetected: []
+      currentlyDetectedNoteNumber: null
     };
     this.throttledProcessAudio = _.throttle(this.processAudio, 100);
-    this.lastFiveDetectedNoteNumbers = [];
   }
 
   componentDidMount() {
     this.getUserMedia();
   }
 
-  updateLastFiveDetectedNoteNumbers = (type, noteNumber) => {
-    if (type === "confident") {
-      if (this.lastFiveDetectedNoteNumbers.length < 5) {
-        this.lastFiveDetectedNoteNumbers.unshift(noteNumber);
-      } else if (this.lastFiveDetectedNoteNumbers.length >= 5) {
-        this.lastFiveDetectedNoteNumbers.pop();
-        this.lastFiveDetectedNoteNumbers.unshift(noteNumber);
-      }
-    } else {
-      this.lastFiveDetectedNoteNumbers = [];
-    }
-  };
-
-  getLastFiveAreEqual = () => {
-    if (this.lastFiveDetectedNoteNumbers.length === 5) {
-      return this.lastFiveDetectedNoteNumbers.every(
-        (val, i, arr) => val === arr[0]
-      );
-    }
-    return false;
-  };
-
   processAudio = pitchDetect => {
     const frequencyData = pitchDetect.getPitch();
     const { type, noteNumber } = frequencyData;
-    this.updateLastFiveDetectedNoteNumbers(type, noteNumber);
-    const lastFiveAreEqual = this.getLastFiveAreEqual();
-
-    if (lastFiveAreEqual) {
-      this.setState({
-        currentlyDetectedNoteNumber: noteNumber
-      });
+    if (type === "confident") {
+      this.setState({ currentlyDetectedNoteNumber: noteNumber });
     } else {
       this.setState({ currentlyDetectedNoteNumber: null });
     }
+
     this.throttledProcessAudio(pitchDetect);
   };
 
@@ -86,57 +64,62 @@ class Main extends Component {
       const stream = await getUserMedia();
       const pitchDetect = new PitchDetect(stream);
       this.processAudio(pitchDetect);
-    } catch (e) {
-      console.error("Failed", e);
+    } catch (error) {
+      console.error("failed to get user media", error);
     }
   }
 
-  handleToggleStart = () => {
-    const { isPlaying } = this.state;
+  handleStartAnimation = () => {
     this.setState({
-      isPlaying: !isPlaying,
-      currentNoteToDetect: notesToRender[0]
+      isPlaying: true
+    });
+  };
+
+  handleEndAnimation = () => {
+    this.setState({
+      isPlaying: false
     });
   };
 
   render() {
     const { isPlaying } = this.state;
-    const noteRange = config.noteRange;
-    const firstNote = noteRange[0];
-    const lastNote = noteRange[1];
-    const numberOfNotes = firstNote - lastNote + 1;
-    const stageHeight = numberOfNotes * 20;
-    const {
-      currentlyDetectedNoteNumber,
-      currentNoteToDetect: { noteNumber, position }
-    } = this.state;
+    const keyRange = config.keyRange;
+    const firstKey = keyRange[0];
+    const lastKey = keyRange[1];
+    const numberOfKeys = lastKey - firstKey + 1;
+    const animationContainerWidth = config.animationContainerWidth;
+    const animationContainerHeight = numberOfKeys * 20;
+    const lastNote = notesToRender[notesToRender.length - 1];
+    const animationWidth = (lastNote.position + lastNote.length) * 100;
+    const { currentlyDetectedNoteNumber } = this.state;
     return (
       <Fragment>
         <NoteData>
-          <div>{`Current note number to detect: ${noteNumber}`}</div>
-          <div>{`Position of current note to detect: ${position}`}</div>
           <div>{`Currently detected note number ${currentlyDetectedNoteNumber}`}</div>
         </NoteData>
         <Controls
-          handleToggleStart={this.handleToggleStart}
+          handleStartAnimation={this.handleStartAnimation}
+          handleEndAnimation={this.handleEndAnimation}
           isPlaying={isPlaying}
         />
         <KeyboardAndAnimation>
           <Keyboard
-            firstNote={firstNote}
-            lastNote={lastNote}
+            firstKey={firstKey}
+            lastKey={lastKey}
             currentlyDetectedNoteNumber={currentlyDetectedNoteNumber}
           />
-          <div>
-            <Stage height={stageHeight}>
-              <ScrollingNotes
-                notesToRender={notesToRender}
-                handleToggleStart={this.handleToggleStart}
-                isPlaying={isPlaying}
-                currentlyDetectedNoteNumber={currentlyDetectedNoteNumber}
-              />
-            </Stage>
-          </div>
+          <AnimationContainer height={animationContainerHeight}>
+            <Animation
+              handleStartAnimation={this.handleStartAnimation}
+              handleEndAnimation={this.handleEndAnimation}
+              animationContainerWidth={animationContainerWidth}
+              animationWidth={animationWidth}
+              firstKey={firstKey}
+              lastKey={lastKey}
+              isPlaying={isPlaying}
+              currentlyDetectedNoteNumber={currentlyDetectedNoteNumber}
+            />
+          </AnimationContainer>
         </KeyboardAndAnimation>
       </Fragment>
     );

@@ -14,11 +14,11 @@ const Key = styled.div`
 `;
 
 const Keyboard = props => {
-  const { firstNote, lastNote, currentlyDetectedNoteNumber } = props;
+  const { firstKey, lastKey, currentlyDetectedNoteNumber } = props;
   return (
     <div>
       {keys.map((key, i) => {
-        if (key.noteNumber <= firstNote && key.noteNumber >= lastNote) {
+        if (key.noteNumber >= firstKey && key.noteNumber <= lastKey) {
           return (
             <Key
               key={i}
@@ -37,7 +37,7 @@ const Keyboard = props => {
 export default Keyboard;
 
 Keyboard.propTypes = {
-  firstNote: PropTypes.number.isRequired,
-  lastNote: PropTypes.number.isRequired,
+  firstKey: PropTypes.number.isRequired,
+  lastKey: PropTypes.number.isRequired,
   currentlyDetectedNoteNumber: PropTypes.number
 };
